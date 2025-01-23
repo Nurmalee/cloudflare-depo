@@ -1,0 +1,44 @@
+name: Deploy CLOUFLARE DEPO to Cloudflare Pages
+run-name: ${{ github.actor }} is deploying CLOUFLARE DEPO for ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'development' && 'staging' || 'preview' }}
+
+on:
+  push:
+    branches:
+      - main           # Trigger production deployment
+      - development    # Trigger staging deployment
+  pull_request:
+    branches:
+      - development    # Trigger preview builds for PRs targeting development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Deploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Or your preferred Node.js version
+          cache: 'npm' # or 'yarn'
+
+      - name: Install dependencies
+        run: npm ci # or yarn install --frozen-lockfile
+
+      - name: Build Next.js app
+        run: npm run build # or yarn build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: cloudflare-depo # Replace with your project name
+          directory: ./.next # The output directory of your build
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }} # Recommended to use GITHUB_TOKEN for deployment status updates
+          deploymentName: "deploy-${{ github.sha }}"  # Custom deployment name based on commit SHA
