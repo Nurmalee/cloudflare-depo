@@ -38,7 +38,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: cloudflare-depo # Replace with your project name
+          projectName: cloudflare-depo # Replace this with your project name
           directory: ./.next # The output directory of your build
           gitHubToken: ${{ secrets.GITHUB_TOKEN }} # Recommended to use GITHUB_TOKEN for deployment status updates
           deploymentName: "deploy-${{ github.sha }}"  # Custom deployment name based on commit SHA
